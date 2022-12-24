@@ -36,8 +36,8 @@ public class Sudoku {
         return nonet[i / NonetDimension][j / NonetDimension];
     }
 
-    record ReturnBoolInt(boolean outcome, int result) {}
-    public ReturnBoolInt isFullWithSize() {
+    record RBoolInt(boolean full, int size) {}
+    public RBoolInt isFullWithSize() {
         var size = 0;
         for (int i = 0; i < PuzzleDimension; i++) {
             for (int j = 0; j < PuzzleDimension; j++) {
@@ -46,7 +46,7 @@ public class Sudoku {
                 }
             }
         }
-        return new ReturnBoolInt(size == PuzzleDimension*PuzzleDimension, size);
+        return new RBoolInt(size == PuzzleDimension*PuzzleDimension, size);
     }
 
     public String getRepresentation() {
@@ -94,11 +94,11 @@ public class Sudoku {
         puzzle[i][j] = value;
     }
 
-    public ReturnBoolInt getPuzzleValue(int i, int j) {
+    public RBoolInt getPuzzleValue(int i, int j) {
         if (inPuzzleBounds(i, j, PuzzleDimension)) {
-            return new ReturnBoolInt(true, puzzle[i][j]);
+            return new RBoolInt(true, puzzle[i][j]);
         } else {
-            return new ReturnBoolInt(false, -1);
+            return new RBoolInt(false, -1);
         }
     }
 
@@ -126,7 +126,7 @@ public class Sudoku {
         return true;
     }
 
-    record RIntIntBool(int row, int col, boolean valid) {}
+    record RIntIntBool(int row, int col, boolean available) {}
 
     public RIntIntBool findNextUnfilled(int row, int col) {
         for (int pos = row*PuzzleDimension + col; pos < PuzzleDimension*PuzzleDimension; pos++) {
@@ -137,6 +137,71 @@ public class Sudoku {
             }
         }
         return new RIntIntBool(-1, -1, false);
+    }
+
+    public boolean isCandidatePosition(int row, int col, int value) {
+        if (value > PuzzleDigits)
+            return false;
+        if (puzzle[row][col] != 0)
+            return false;
+        return !(rowUsed[row].contains(value) || columnUsed[col].contains(value) || getNonet(row, col).contains(value));
+    }
+
+    public boolean solve() {
+        return play(0, 0);
+    }
+
+    public boolean play(int startRow, int startCol) {
+        var result = findNextUnfilled(startRow, startCol);
+        var row = result.row();
+        var col = result.col();
+        var available = result.available();
+
+        if (!available)
+            return checkPuzzleValidity();
+
+        for (int digit = 1; digit <= PuzzleDigits; digit++) {
+            if (isCandidatePosition(row, col, digit)) {
+                setPuzzleValue(row, col, digit);
+                var status = isFullWithSize();
+                if (status.full()) {
+                    return true;
+                } else if (play(row, col)) {
+                    return true;
+                }
+                unsetPuzzleValue(row, col);
+            }
+        }
+        return false;
+    }
+
+    record SolutionStatus(boolean solved, int position) {}
+    public SolutionStatus checkPuzzleSolutionAlignment(String puzzle, String solution) {
+        if (puzzle.length() != solution.length())
+            return new SolutionStatus(false, -1);
+
+        for (int i=0; i < puzzle.length(); i++) {
+            if (puzzle.charAt(i) == '0')
+                continue;
+            if (puzzle.charAt(i) != solution.charAt(i))
+                return new SolutionStatus(false, i);
+        }
+        return new SolutionStatus(true, puzzle.length() );
+    }
+
+    public static void main(String args[]) {
+        if (args.length < 2)
+            return;
+
+        var puzzle = args[0];
+        var solution = args[1];
+
+        var sudoku = new Sudoku();
+        sudoku.loadData(puzzle);
+        var unsolvedPuzzle = sudoku.getRepresentation();
+        var result = sudoku.solve();
+        var solvedPuzzle = sudoku.getRepresentation();
+        System.out.println(solvedPuzzle);
     }
 }
 
