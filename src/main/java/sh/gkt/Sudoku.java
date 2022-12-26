@@ -36,8 +36,8 @@ public class Sudoku {
         return nonet[i / NonetDimension][j / NonetDimension];
     }
 
-    record RBoolInt(boolean full, int size) {}
-    public RBoolInt isFullWithSize() {
+    record IsFullState(boolean full, int size) {}
+    public IsFullState isFullWithSize() {
         var size = 0;
         for (int i = 0; i < PuzzleDimension; i++) {
             for (int j = 0; j < PuzzleDimension; j++) {
@@ -46,7 +46,7 @@ public class Sudoku {
                 }
             }
         }
-        return new RBoolInt(size == PuzzleDimension*PuzzleDimension, size);
+        return new IsFullState(size == PuzzleDimension*PuzzleDimension, size);
     }
 
     public String getRepresentation() {
@@ -94,11 +94,12 @@ public class Sudoku {
         puzzle[i][j] = value;
     }
 
-    public RBoolInt getPuzzleValue(int i, int j) {
+    record PuzzleValue(boolean valid, int value) {}
+    public PuzzleValue getPuzzleValue(int i, int j) {
         if (inPuzzleBounds(i, j, PuzzleDimension)) {
-            return new RBoolInt(true, puzzle[i][j]);
+            return new PuzzleValue(true, puzzle[i][j]);
         } else {
-            return new RBoolInt(false, -1);
+            return new PuzzleValue(false, -1);
         }
     }
 
@@ -126,17 +127,17 @@ public class Sudoku {
         return true;
     }
 
-    record RIntIntBool(int row, int col, boolean available) {}
+    record NextUnfilled(int row, int col, boolean available) {}
 
-    public RIntIntBool findNextUnfilled(int row, int col) {
+    public NextUnfilled findNextUnfilled(int row, int col) {
         for (int pos = row*PuzzleDimension + col; pos < PuzzleDimension*PuzzleDimension; pos++) {
             var posRow = pos / PuzzleDimension;
             var posCol = pos % PuzzleDimension;
             if (puzzle[posRow][posCol] == 0) {
-                return new RIntIntBool(posRow, posCol, true);
+                return new NextUnfilled(posRow, posCol, true);
             }
         }
-        return new RIntIntBool(-1, -1, false);
+        return new NextUnfilled(-1, -1, false);
     }
 
     public boolean isCandidatePosition(int row, int col, int value) {
@@ -190,11 +191,14 @@ public class Sudoku {
     }
 
     public static void main(String args[]) {
+        System.out.println("Sudoku loves you.");
         if (args.length < 2)
             return;
 
         var puzzle = args[0];
         var solution = args[1];
+        System.out.printf("Puzzle: %s\n", puzzle);
+        System.out.printf("Solution: %s\n", solution);
 
         var sudoku = new Sudoku();
         sudoku.loadData(puzzle);
