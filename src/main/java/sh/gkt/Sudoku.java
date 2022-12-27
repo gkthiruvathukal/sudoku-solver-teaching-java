@@ -116,10 +116,10 @@ public class Sudoku {
 
     public boolean loadData(String text) {
         var digits = Util.getDigits(text);
-        if (digits.length < PuzzleDimension * PuzzleDimension)
+        if (digits.consumed() < PuzzleDimension * PuzzleDimension)
             return false;
-        for (int i=0; i < digits.length; i++) {
-            var digit = digits[i];
+        for (int i=0; i < digits.consumed(); i++) {
+            var digit = digits.digits()[i];
             var row = i / PuzzleDimension;
             var col = i % PuzzleDimension;
             setPuzzleValue(row, col, digit);

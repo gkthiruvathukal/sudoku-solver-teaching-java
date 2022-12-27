@@ -1,12 +1,19 @@
 package sh.gkt;
 
 public class Util {
-    public static int[] getDigits(String text) {
+
+    public record Digits(int consumed, int[] digits) {}
+    public static Digits getDigits(String text) {
         var intDigits = new int[text.length()];
 
         for (int i=0; i < text.length(); i++) {
-            intDigits[i] = Integer.parseInt(text.substring(i, i+1));
+            try {
+                intDigits[i] = Integer.parseInt(text.substring(i, i + 1));
+            } catch (NumberFormatException numberFormatException) {
+                System.out.println("Exception at " + i);
+                return new Digits(i, intDigits);
+            }
         }
-        return intDigits;
+        return new Digits(intDigits.length, intDigits);
     }
 }

@@ -11,7 +11,6 @@ repositories {
     mavenCentral()
 }
 
-
 dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
@@ -22,6 +21,10 @@ application {
     mainClass.set("sh.gkt.Sudoku")
 }
 
-tasks.getByName<Test>("test") {
+tasks.test {
     useJUnitPlatform()
+    maxHeapSize = "1G"
+    testLogging {
+        events("passed")
+    }
 }
