@@ -17,11 +17,14 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: '17'
-    - name: Setup Gradle
+    - name: Gradle Build
       uses: gradle/gradle-build-action@v2
-    - name: Show Gradle version
-      run: gradle --version
-    - name: Run Gradle Build
-      run: gradle build
-    - name: Run Tests
-      run: gradle test -i
+      with:
+          gradle-version: current
+          arguments: build
+    - name: Gradle Test
+      uses: gradle/gradle-build-action@v2
+      with:
+          gradle-version: current
+          arguments: test
+
