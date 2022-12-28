@@ -38,7 +38,6 @@ class UtilTest {
     @Test
     void getDigitsAltogetherBad() {
         var text3 = "George";
-        var digits3 = new int[]{};
         var result3 = Util.getDigits(text3);
         assertEquals(0, result3.consumed());
     }

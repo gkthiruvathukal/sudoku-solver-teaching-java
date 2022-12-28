@@ -7,7 +7,7 @@ import java.util.*;
 public class Sudoku {
     public final static int PuzzleDigits = 9;
     public final static int PuzzleDimension = 9;
-    public final static int NonetDimension = 9;
+    public final static int NonetDimension = 3;
 
     record SudokuSolverConfig(String puzzle, String solution) {}
 
@@ -164,11 +164,12 @@ public class Sudoku {
         for (int digit = 1; digit <= PuzzleDigits; digit++) {
             if (isCandidatePosition(row, col, digit)) {
                 setPuzzleValue(row, col, digit);
+                show();
                 var status = isFullWithSize();
                 if (status.full()) {
                     return true;
-                } else if (play(row, col)) {
-                    return true;
+                } else {
+                    if (play(row, col)) return true;
                 }
                 unsetPuzzleValue(row, col);
             }
@@ -190,19 +191,41 @@ public class Sudoku {
         return new SolutionStatus(true, puzzle.length() );
     }
 
+    public void show() {
+        System.out.println("----".repeat(PuzzleDimension+1) + "-");
+        for (int i=0; i < puzzle.length; i++) {
+            for (int j=0; j < puzzle[i].length; j++) {
+                System.out.printf(" %d  ", puzzle[i][j]);
+            }
+            System.out.printf(" (%d)\n", rowUsed[i].size());
+        }
+        System.out.println("----".repeat(PuzzleDimension+1) + "-");
+        for (int j =0; j < puzzle[0].length; j++) {
+            System.out.printf("(%d) ", columnUsed[j].size());
+        }
+        System.out.println();
+	System.out.println("Nonets:");
+	for (int p = 0; p < nonet.length; p++) {
+		for (int q=0 ; q < nonet[p].length; q++) {
+			System.out.printf("(%d) ", nonet[p][q].size());
+		}
+		System.out.println();
+	}
+        System.out.println();
+    }
+
     public static void main(String args[]) {
         System.out.println("Sudoku loves you.");
-        if (args.length < 2)
-            return;
 
-        var puzzle = args[0];
-        var solution = args[1];
+        var puzzle = "300401620100080400005020830057800000000700503002904007480530010203090000070006090";
+        var solution = "";
         System.out.printf("Puzzle: %s\n", puzzle);
         System.out.printf("Solution: %s\n", solution);
 
         var sudoku = new Sudoku();
         sudoku.loadData(puzzle);
         var unsolvedPuzzle = sudoku.getRepresentation();
+        sudoku.show();
         var result = sudoku.solve();
         var solvedPuzzle = sudoku.getRepresentation();
         System.out.println(solvedPuzzle);
