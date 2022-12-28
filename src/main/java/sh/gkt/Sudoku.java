@@ -5,30 +5,40 @@ package sh.gkt;
  */
 
 import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Set;
 
 public class Sudoku {
     public final static int PuzzleDigits = 9;
     public final static int PuzzleDimension = 9;
     public final static int NonetDimension = 3;
-    private final int[][] puzzle;
-    private final Set<Integer>[] rowUsed;
-    private final Set<Integer>[] columnUsed;
-    private final Set<Integer>[][] nonet;
+    private final ArrayList<ArrayList<Integer>> puzzle;
+    private final ArrayList<HashSet<Integer>> rowUsed;
+    private final ArrayList<HashSet<Integer>> columnUsed;
+    private final ArrayList<ArrayList<HashSet<Integer>>> nonet;
 
     public Sudoku() {
-        puzzle = new int[PuzzleDimension][PuzzleDimension];
-        rowUsed = new Set[PuzzleDimension];
-        columnUsed = new Set[PuzzleDimension];
-        nonet = new Set[NonetDimension][NonetDimension];
+        puzzle = new ArrayList<>(PuzzleDimension);
+        rowUsed = new ArrayList<>(PuzzleDimension);
+        columnUsed = new ArrayList<>(PuzzleDimension);
+        nonet = new ArrayList<>(NonetDimension);
 
         for (int i = 0; i < PuzzleDimension; i++) {
-            rowUsed[i] = new HashSet<>();
-            columnUsed[i] = new HashSet<>();
+            rowUsed.add(new HashSet<>());
+            columnUsed.add(new HashSet<>());
+            var row = new ArrayList<Integer>(PuzzleDimension);
+            for (int j=0; j < PuzzleDimension; j++)
+                row.add(0);
+            puzzle.add(row);
         }
-        for (int i = 0; i < NonetDimension; i++)
-            for (int j = 0; j < NonetDimension; j++)
-                nonet[i][j] = new HashSet<>();
+        for (int i = 0; i < NonetDimension; i++) {
+            var row = new ArrayList<HashSet<Integer>>(NonetDimension);
+            for (int j = 0; j < NonetDimension; j++) {
+                var ijSet = new HashSet<Integer>();
+                row.add(ijSet);
+            }
+            nonet.add(row);
+        }
     }
 
     public static void main(String[] args) {
@@ -49,14 +59,14 @@ public class Sudoku {
     }
 
     public Set<Integer> getNonet(int i, int j) {
-        return nonet[i / NonetDimension][j / NonetDimension];
+        return nonet.get(i / NonetDimension).get(j / NonetDimension);
     }
 
-    public IsFullState isFullWithSize() {
+    private IsFullState isFullWithSize() {
         var size = 0;
         for (int i = 0; i < PuzzleDimension; i++) {
             for (int j = 0; j < PuzzleDimension; j++) {
-                if (puzzle[i][j] > 0) {
+                if (puzzle.get(i).get(j) > 0) {
                     size++;
                 }
             }
@@ -66,29 +76,31 @@ public class Sudoku {
 
     public String getRepresentation() {
         StringBuilder result = new StringBuilder();
-        for (int[] ints : puzzle)
-            for (int j = 0; j < puzzle[0].length; j++)
-                result.append(ints[j]);
+        for (var row : puzzle)
+            for (var value : row)
+                result.append(value);
         return result.toString();
     }
 
-    public boolean checkPuzzleValidity() {
-        for (int i = 0; i < puzzle.length; i++) {
-            if (rowUsed[i].size() < PuzzleDimension)
+    private boolean checkPuzzleValidity() {
+        for (int i = 0; i < puzzle.size(); i++) {
+            if (rowUsed.get(i).size() < PuzzleDimension)
                 return false;
-            if (columnUsed[i].size() < PuzzleDimension)
+            if (columnUsed.get(i).size() < PuzzleDimension)
                 return false;
         }
 
-        for (Set<Integer>[] sets : nonet)
-            for (int j = 0; j < nonet[0].length; j++)
-                if (sets[j].size() < PuzzleDimension) {
+        for (var row : nonet) {
+            for (var column : row) {
+                if (column.size() < PuzzleDimension) {
                     return false;
                 }
+            }
+        }
         return true;
     }
 
-    public boolean inPuzzleBounds(int i, int j, int dimension) {
+    private boolean inPuzzleBounds(int i, int j, int dimension) {
         if (i < 0 || i >= dimension)
             return false;
         else if (j < 0 || j >= dimension)
@@ -96,37 +108,39 @@ public class Sudoku {
         return true;
     }
 
-    public void setPuzzleValue(int i, int j, int value) {
+    private void setPuzzleValue(int i, int j, int value) {
         if (value > PuzzleDigits)
             return;
         if (!inPuzzleBounds(i, j, PuzzleDimension))
             return;
         // Note: 0 means unused so it must not go into the set(s)
         if (value > 0 && value <= PuzzleDigits) {
-            rowUsed[i].add(value);
-            columnUsed[j].add(value);
+            rowUsed.get(i).add(value);
+            columnUsed.get(j).add(value);
             getNonet(i, j).add(value);
         }
-        puzzle[i][j] = value;
+
+        // remember; ArrayList equivalent of puzzle[i][j] = value
+        puzzle.get(i).set(j, value);
     }
 
-    public PuzzleValue getPuzzleValue(int i, int j) {
+    private PuzzleValue getPuzzleValue(int i, int j) {
         if (inPuzzleBounds(i, j, PuzzleDimension)) {
-            return new PuzzleValue(true, puzzle[i][j]);
+            return new PuzzleValue(true, puzzle.get(i).get(j));
         } else {
             return new PuzzleValue(false, -1);
         }
     }
 
-    public void unsetPuzzleValue(int i, int j) {
+    private void unsetPuzzleValue(int i, int j) {
         if (!inPuzzleBounds(i, j, PuzzleDimension))
             return;
 
-        var value = puzzle[i][j];
-        rowUsed[i].remove(value);
-        columnUsed[j].remove(value);
+        var value = puzzle.get(i).get(j);
+        rowUsed.get(i).remove(value);
+        columnUsed.get(j).remove(value);
         getNonet(i, j).remove(value);
-        puzzle[i][j] = 0;
+        puzzle.get(i).set(j, 0);
     }
 
     public boolean loadData(String text) {
@@ -142,30 +156,30 @@ public class Sudoku {
         return true;
     }
 
-    public NextUnfilled findNextUnfilled(int row, int col) {
+    private NextUnfilled findNextUnfilled(int row, int col) {
         for (int pos = row * PuzzleDimension + col; pos < PuzzleDimension * PuzzleDimension; pos++) {
             var posRow = pos / PuzzleDimension;
             var posCol = pos % PuzzleDimension;
-            if (puzzle[posRow][posCol] == 0) {
+            if (puzzle.get(posRow).get(posCol) == 0) {
                 return new NextUnfilled(posRow, posCol, true);
             }
         }
         return new NextUnfilled(-1, -1, false);
     }
 
-    public boolean isCandidatePosition(int row, int col, int value) {
+    private boolean isCandidatePosition(int row, int col, int value) {
         if (value > PuzzleDigits)
             return false;
-        if (puzzle[row][col] != 0)
+        if (puzzle.get(row).get(col)  != 0)
             return false;
-        return !(rowUsed[row].contains(value) || columnUsed[col].contains(value) || getNonet(row, col).contains(value));
+        return !(rowUsed.get(row).contains(value) || columnUsed.get(col).contains(value) || getNonet(row, col).contains(value));
     }
 
     public boolean solve() {
         return play(0, 0);
     }
 
-    public boolean play(int startRow, int startCol) {
+    private boolean play(int startRow, int startCol) {
         var result = findNextUnfilled(startRow, startCol);
         var row = result.row();
         var col = result.col();
@@ -205,21 +219,21 @@ public class Sudoku {
 
     public void show() {
         System.out.println("----".repeat(PuzzleDimension + 1) + "-");
-        for (int i = 0; i < puzzle.length; i++) {
-            for (int j = 0; j < puzzle[i].length; j++) {
-                System.out.printf(" %d  ", puzzle[i][j]);
+        for (int i = 0; i < puzzle.size(); i++) {
+            for (int j = 0; j < puzzle.get(i).size(); j++) {
+                System.out.printf(" %d  ", puzzle.get(i).get(j));
             }
-            System.out.printf(" (%d)\n", rowUsed[i].size());
+            System.out.printf(" (%d)\n", rowUsed.get(i).size());
         }
         System.out.println("----".repeat(PuzzleDimension + 1) + "-");
-        for (int j = 0; j < puzzle[0].length; j++) {
-            System.out.printf("(%d) ", columnUsed[j].size());
+        for (int j = 0; j < puzzle.get(0).size(); j++) {
+            System.out.printf("(%d) ", columnUsed.get(j).size());
         }
         System.out.println();
         System.out.println("Nonets:");
-        for (Set<Integer>[] sets : nonet) {
-            for (Set<Integer> set : sets) {
-                System.out.printf("(%d) ", set.size());
+        for (var row : nonet) {
+            for (var column : row) {
+                System.out.printf("(%d) ", column.size());
             }
             System.out.println();
         }

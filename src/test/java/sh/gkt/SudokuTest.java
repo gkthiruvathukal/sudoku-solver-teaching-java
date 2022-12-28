@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class SudokuTest {
 
     @Test
-    void knownSolution() {
+    void tryKnownSolution() {
         var puzzle = "300401620100080400005020830057800000000700503002904007480530010203090000070006090";
         var solution = "398471625126385479745629831657813942914762583832954167489537216263198754571246398";
         System.out.printf("  Puzzle: %s\n", puzzle);
@@ -22,13 +22,6 @@ class SudokuTest {
         assertTrue(solved);
     }
 
-    @Test
-    void getNonet() {
-    }
-
-    @Test
-    void isFullWithSize() {
-    }
 
     @Test
     void getRepresentation() {
@@ -39,47 +32,4 @@ class SudokuTest {
         assertEquals(puzzle, representation);
     }
 
-    @Test
-    void checkPuzzleValidity() {
-    }
-
-    @Test
-    void inPuzzleBounds() {
-    }
-
-    @Test
-    void setPuzzleValue() {
-    }
-
-    @Test
-    void getPuzzleValue() {
-    }
-
-    @Test
-    void unsetPuzzleValue() {
-    }
-
-    @Test
-    void loadData() {
-    }
-
-    @Test
-    void findNextUnfilled() {
-    }
-
-    @Test
-    void isCandidatePosition() {
-    }
-
-    @Test
-    void solve() {
-    }
-
-    @Test
-    void play() {
-    }
-
-    @Test
-    void checkPuzzleSolutionAlignment() {
-    }
 }
