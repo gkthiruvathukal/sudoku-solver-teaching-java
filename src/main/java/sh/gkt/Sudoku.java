@@ -11,11 +11,11 @@ public class Sudoku {
 
     record SudokuSolverConfig(String puzzle, String solution) {}
 
-    private int[][] puzzle;
-    private Set<Integer>[] rowUsed;
-    private Set<Integer>[] columnUsed;
+    private final int[][] puzzle;
+    private final Set<Integer>[] rowUsed;
+    private final Set<Integer>[] columnUsed;
 
-    private Set<Integer>[][] nonet;
+    private final Set<Integer>[][] nonet;
 
     public Sudoku() {
         puzzle = new int[PuzzleDimension][PuzzleDimension];
@@ -24,12 +24,12 @@ public class Sudoku {
         nonet = new Set[NonetDimension][NonetDimension];
 
         for (int i=0; i < PuzzleDimension; i++) {
-            rowUsed[i] = new HashSet<Integer>();
-            columnUsed[i] = new HashSet<Integer>();
+            rowUsed[i] = new HashSet<>();
+            columnUsed[i] = new HashSet<>();
         }
         for (int i=0; i < NonetDimension; i++)
             for (int j=0; j < NonetDimension; j++)
-                nonet[i][j] = new HashSet<Integer>();
+                nonet[i][j] = new HashSet<>();
     }
 
     public Set<Integer> getNonet(int i, int j) {
@@ -50,10 +50,10 @@ public class Sudoku {
     }
 
     public String getRepresentation() {
-        StringBuffer result = new StringBuffer();
-        for (int i=0; i < puzzle.length; i++)
-            for (int j=0; j < puzzle[0].length; j++)
-                result.append( puzzle[i][j] + "");
+        StringBuilder result = new StringBuilder();
+        for (int[] ints : puzzle)
+            for (int j = 0; j < puzzle[0].length; j++)
+                result.append(ints[j]);
         return result.toString();
     }
 
@@ -65,9 +65,9 @@ public class Sudoku {
                 return false;
         }
 
-        for (int i=0; i < nonet.length; i++)
-            for (int j=0; j < nonet[0].length; j++)
-                if (nonet[i][j].size() < PuzzleDimension) {
+        for (Set<Integer>[] sets : nonet)
+            for (int j = 0; j < nonet[0].length; j++)
+                if (sets[j].size() < PuzzleDimension) {
                     return false;
                 }
         return true;
@@ -76,7 +76,7 @@ public class Sudoku {
     public boolean inPuzzleBounds(int i, int j, int dimension) {
         if (i < 0 || i >= dimension)
             return false;
-        if (j < 0 || j >= dimension)
+        else if (j < 0 || j >= dimension)
             return true;
         return true;
     }
@@ -86,6 +86,7 @@ public class Sudoku {
             return;
         if (!inPuzzleBounds(i, j, PuzzleDimension))
             return;
+        // Note: 0 means unused so it must not go into the set(s)
         if (value > 0 && value <= PuzzleDigits) {
             rowUsed[i].add(value);
             columnUsed[j].add(value);
@@ -205,16 +206,16 @@ public class Sudoku {
         }
         System.out.println();
 	System.out.println("Nonets:");
-	for (int p = 0; p < nonet.length; p++) {
-		for (int q=0 ; q < nonet[p].length; q++) {
-			System.out.printf("(%d) ", nonet[p][q].size());
-		}
-		System.out.println();
-	}
+        for (Set<Integer>[] sets : nonet) {
+            for (Set<Integer> set : sets) {
+                System.out.printf("(%d) ", set.size());
+            }
+            System.out.println();
+        }
         System.out.println();
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         System.out.println("Sudoku loves you.");
 
         var puzzle = "300401620100080400005020830057800000000700503002904007480530010203090000070006090";
