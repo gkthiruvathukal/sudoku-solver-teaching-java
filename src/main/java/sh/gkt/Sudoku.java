@@ -3,18 +3,17 @@ package sh.gkt;
 /*
  * Note: Work in progress. Porting from my Go version!
  */
-import java.util.*;
+
+import java.util.HashSet;
+import java.util.Set;
+
 public class Sudoku {
     public final static int PuzzleDigits = 9;
     public final static int PuzzleDimension = 9;
     public final static int NonetDimension = 3;
-
-    record SudokuSolverConfig(String puzzle, String solution) {}
-
     private final int[][] puzzle;
     private final Set<Integer>[] rowUsed;
     private final Set<Integer>[] columnUsed;
-
     private final Set<Integer>[][] nonet;
 
     public Sudoku() {
@@ -23,20 +22,36 @@ public class Sudoku {
         columnUsed = new Set[PuzzleDimension];
         nonet = new Set[NonetDimension][NonetDimension];
 
-        for (int i=0; i < PuzzleDimension; i++) {
+        for (int i = 0; i < PuzzleDimension; i++) {
             rowUsed[i] = new HashSet<>();
             columnUsed[i] = new HashSet<>();
         }
-        for (int i=0; i < NonetDimension; i++)
-            for (int j=0; j < NonetDimension; j++)
+        for (int i = 0; i < NonetDimension; i++)
+            for (int j = 0; j < NonetDimension; j++)
                 nonet[i][j] = new HashSet<>();
+    }
+
+    public static void main(String[] args) {
+        System.out.println("Sudoku loves you.");
+
+        var puzzle = "300401620100080400005020830057800000000700503002904007480530010203090000070006090";
+        var solution = "";
+        System.out.printf("Puzzle: %s\n", puzzle);
+        System.out.printf("Solution: %s\n", solution);
+
+        var sudoku = new Sudoku();
+        sudoku.loadData(puzzle);
+        var unsolvedPuzzle = sudoku.getRepresentation();
+        sudoku.show();
+        var result = sudoku.solve();
+        var solvedPuzzle = sudoku.getRepresentation();
+        System.out.println(solvedPuzzle);
     }
 
     public Set<Integer> getNonet(int i, int j) {
         return nonet[i / NonetDimension][j / NonetDimension];
     }
 
-    record IsFullState(boolean full, int size) {}
     public IsFullState isFullWithSize() {
         var size = 0;
         for (int i = 0; i < PuzzleDimension; i++) {
@@ -46,7 +61,7 @@ public class Sudoku {
                 }
             }
         }
-        return new IsFullState(size == PuzzleDimension*PuzzleDimension, size);
+        return new IsFullState(size == PuzzleDimension * PuzzleDimension, size);
     }
 
     public String getRepresentation() {
@@ -58,7 +73,7 @@ public class Sudoku {
     }
 
     public boolean checkPuzzleValidity() {
-        for (int i=0; i < puzzle.length; i++) {
+        for (int i = 0; i < puzzle.length; i++) {
             if (rowUsed[i].size() < PuzzleDimension)
                 return false;
             if (columnUsed[i].size() < PuzzleDimension)
@@ -81,7 +96,7 @@ public class Sudoku {
         return true;
     }
 
-    public void setPuzzleValue(int i, int j,  int value) {
+    public void setPuzzleValue(int i, int j, int value) {
         if (value > PuzzleDigits)
             return;
         if (!inPuzzleBounds(i, j, PuzzleDimension))
@@ -95,7 +110,6 @@ public class Sudoku {
         puzzle[i][j] = value;
     }
 
-    record PuzzleValue(boolean valid, int value) {}
     public PuzzleValue getPuzzleValue(int i, int j) {
         if (inPuzzleBounds(i, j, PuzzleDimension)) {
             return new PuzzleValue(true, puzzle[i][j]);
@@ -119,7 +133,7 @@ public class Sudoku {
         var digits = Util.getDigits(text);
         if (digits.consumed() < PuzzleDimension * PuzzleDimension)
             return false;
-        for (int i=0; i < digits.consumed(); i++) {
+        for (int i = 0; i < digits.consumed(); i++) {
             var digit = digits.digits()[i];
             var row = i / PuzzleDimension;
             var col = i % PuzzleDimension;
@@ -128,10 +142,8 @@ public class Sudoku {
         return true;
     }
 
-    record NextUnfilled(int row, int col, boolean available) {}
-
     public NextUnfilled findNextUnfilled(int row, int col) {
-        for (int pos = row*PuzzleDimension + col; pos < PuzzleDimension*PuzzleDimension; pos++) {
+        for (int pos = row * PuzzleDimension + col; pos < PuzzleDimension * PuzzleDimension; pos++) {
             var posRow = pos / PuzzleDimension;
             var posCol = pos % PuzzleDimension;
             if (puzzle[posRow][posCol] == 0) {
@@ -178,34 +190,33 @@ public class Sudoku {
         return false;
     }
 
-    record SolutionStatus(boolean solved, int position) {}
     public SolutionStatus checkPuzzleSolutionAlignment(String puzzle, String solution) {
         if (puzzle.length() != solution.length())
             return new SolutionStatus(false, -1);
 
-        for (int i=0; i < puzzle.length(); i++) {
+        for (int i = 0; i < puzzle.length(); i++) {
             if (puzzle.charAt(i) == '0')
                 continue;
             if (puzzle.charAt(i) != solution.charAt(i))
                 return new SolutionStatus(false, i);
         }
-        return new SolutionStatus(true, puzzle.length() );
+        return new SolutionStatus(true, puzzle.length());
     }
 
     public void show() {
-        System.out.println("----".repeat(PuzzleDimension+1) + "-");
-        for (int i=0; i < puzzle.length; i++) {
-            for (int j=0; j < puzzle[i].length; j++) {
+        System.out.println("----".repeat(PuzzleDimension + 1) + "-");
+        for (int i = 0; i < puzzle.length; i++) {
+            for (int j = 0; j < puzzle[i].length; j++) {
                 System.out.printf(" %d  ", puzzle[i][j]);
             }
             System.out.printf(" (%d)\n", rowUsed[i].size());
         }
-        System.out.println("----".repeat(PuzzleDimension+1) + "-");
-        for (int j =0; j < puzzle[0].length; j++) {
+        System.out.println("----".repeat(PuzzleDimension + 1) + "-");
+        for (int j = 0; j < puzzle[0].length; j++) {
             System.out.printf("(%d) ", columnUsed[j].size());
         }
         System.out.println();
-	System.out.println("Nonets:");
+        System.out.println("Nonets:");
         for (Set<Integer>[] sets : nonet) {
             for (Set<Integer> set : sets) {
                 System.out.printf("(%d) ", set.size());
@@ -215,21 +226,19 @@ public class Sudoku {
         System.out.println();
     }
 
-    public static void main(String[] args) {
-        System.out.println("Sudoku loves you.");
+    record SudokuSolverConfig(String puzzle, String solution) {
+    }
 
-        var puzzle = "300401620100080400005020830057800000000700503002904007480530010203090000070006090";
-        var solution = "";
-        System.out.printf("Puzzle: %s\n", puzzle);
-        System.out.printf("Solution: %s\n", solution);
+    record IsFullState(boolean full, int size) {
+    }
 
-        var sudoku = new Sudoku();
-        sudoku.loadData(puzzle);
-        var unsolvedPuzzle = sudoku.getRepresentation();
-        sudoku.show();
-        var result = sudoku.solve();
-        var solvedPuzzle = sudoku.getRepresentation();
-        System.out.println(solvedPuzzle);
+    record PuzzleValue(boolean valid, int value) {
+    }
+
+    record NextUnfilled(int row, int col, boolean available) {
+    }
+
+    record SolutionStatus(boolean solved, int position) {
     }
 }
 
