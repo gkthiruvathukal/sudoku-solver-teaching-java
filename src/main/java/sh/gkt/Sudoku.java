@@ -41,22 +41,25 @@ public class Sudoku {
         }
     }
 
-    public static void main(String[] args) {
-        System.out.println("Sudoku loves you.");
-
-        var puzzle = "300401620100080400005020830057800000000700503002904007480530010203090000070006090";
-        var solution = "";
-        System.out.printf("Puzzle: %s\n", puzzle);
-        System.out.printf("Solution: %s\n", solution);
-
-        var sudoku = new Sudoku();
-        sudoku.loadData(puzzle);
-        var unsolvedPuzzle = sudoku.getRepresentation();
-        sudoku.show();
-        var result = sudoku.solve();
-        var solvedPuzzle = sudoku.getRepresentation();
-        System.out.println(solvedPuzzle);
-    }
+//    public static void main(String[] args) {
+//        // TODO: Eliminate this hard-coded stuff.
+//        // Add general CLI interface from my Go version.
+//
+//        System.out.println("Sudoku loves you.");
+//
+//        var puzzle = "300401620100080400005020830057800000000700503002904007480530010203090000070006090";
+//        var solution = "";
+//        System.out.printf("Puzzle: %s\n", puzzle);
+//        System.out.printf("Solution: %s\n", solution);
+//
+//        var sudoku = new Sudoku();
+//        sudoku.loadData(puzzle);
+//        var unsolvedPuzzle = sudoku.getRepresentation();
+//        sudoku.show();
+//        var result = sudoku.solve();
+//        var solvedPuzzle = sudoku.getRepresentation();
+//        System.out.println(solvedPuzzle);
+//    }
 
     public Set<Integer> getNonet(int i, int j) {
         return nonet.get(i / NonetDimension).get(j / NonetDimension);
