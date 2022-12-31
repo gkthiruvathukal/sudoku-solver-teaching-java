@@ -12,25 +12,30 @@ public class Sudoku {
     public final static int PuzzleDigits = 9;
     public final static int PuzzleDimension = 9;
     public final static int NonetDimension = 3;
-    private final ArrayList<ArrayList<Integer>> puzzle;
-    private final ArrayList<HashSet<Integer>> rowUsed;
-    private final ArrayList<HashSet<Integer>> columnUsed;
-    private final ArrayList<ArrayList<HashSet<Integer>>> nonet;
+    private final ArrayList<ArrayList<Integer>> puzzle; // 2D array of Int (using generics)
+    private final ArrayList<HashSet<Integer>> rowUsed; // 1D array of HashSet
+    private final ArrayList<HashSet<Integer>> columnUsed; // 1D array of HashSet
+    private final ArrayList<ArrayList<HashSet<Integer>>> nonet; // 2D array of hashSet
 
     public Sudoku() {
-        puzzle = new ArrayList<>(PuzzleDimension);
-        rowUsed = new ArrayList<>(PuzzleDimension);
-        columnUsed = new ArrayList<>(PuzzleDimension);
-        nonet = new ArrayList<>(NonetDimension);
+        // TODO: Refactor declarations above to interface?
+        puzzle = getPuzzleRepresentation();
+        nonet = getNonetRepresentation();
+        rowUsed = getUsageSet();
+        columnUsed = getUsageSet();
+    }
 
-        for (int i = 0; i < PuzzleDimension; i++) {
-            rowUsed.add(new HashSet<>());
-            columnUsed.add(new HashSet<>());
-            var row = new ArrayList<Integer>(PuzzleDimension);
-            for (int j=0; j < PuzzleDimension; j++)
-                row.add(0);
-            puzzle.add(row);
-        }
+    private static ArrayList<HashSet<Integer>> getUsageSet() {
+        final ArrayList<HashSet<Integer>> used;
+        used = new ArrayList<>(PuzzleDimension);
+        for (int i = 0; i < PuzzleDimension; i++)
+            used.add(new HashSet<>());
+        return used;
+    }
+
+    private static ArrayList<ArrayList<HashSet<Integer>>> getNonetRepresentation() {
+        final ArrayList<ArrayList<HashSet<Integer>>> nonet
+                = new ArrayList<>(NonetDimension);
         for (int i = 0; i < NonetDimension; i++) {
             var row = new ArrayList<HashSet<Integer>>(NonetDimension);
             for (int j = 0; j < NonetDimension; j++) {
@@ -39,6 +44,19 @@ public class Sudoku {
             }
             nonet.add(row);
         }
+        return nonet;
+    }
+
+    private static ArrayList<ArrayList<Integer>> getPuzzleRepresentation() {
+        final ArrayList<ArrayList<Integer>> a2dint;
+        a2dint = new ArrayList<>(PuzzleDimension);
+        for (int i = 0; i < PuzzleDimension; i++) {
+            var row = new ArrayList<Integer>(PuzzleDimension);
+            for (int j=0; j < PuzzleDimension; j++)
+                row.add(0);
+            a2dint.add(row);
+        }
+        return a2dint;
     }
 
 //    public static void main(String[] args) {
@@ -61,15 +79,23 @@ public class Sudoku {
 //        System.out.println(solvedPuzzle);
 //    }
 
-    public Set<Integer> getNonet(int i, int j) {
+    public Set<Integer> getNonetSet(int i, int j) {
         return nonet.get(i / NonetDimension).get(j / NonetDimension);
+    }
+
+    private void setPuzzleAt(int i, int j, int value) {
+        puzzle.get(i).set(j, value);  // this is like array version of puzzle[i][j] (l-value) = value
+    }
+
+    private int getPuzzleAt(int i, int j) {
+        return puzzle.get(i).get(j); // this is like array version of puzzle[i][j] as r-value.
     }
 
     private IsFullState isFullWithSize() {
         var size = 0;
         for (int i = 0; i < PuzzleDimension; i++) {
             for (int j = 0; j < PuzzleDimension; j++) {
-                if (puzzle.get(i).get(j) > 0) {
+                if (getPuzzleAt(i, j) > 0) {
                     size++;
                 }
             }
@@ -120,11 +146,11 @@ public class Sudoku {
         if (value > 0 && value <= PuzzleDigits) {
             rowUsed.get(i).add(value);
             columnUsed.get(j).add(value);
-            getNonet(i, j).add(value);
+            getNonetSet(i, j).add(value);
         }
 
         // remember; ArrayList equivalent of puzzle[i][j] = value
-        puzzle.get(i).set(j, value);
+        setPuzzleAt(i, j, value);
     }
 
     private PuzzleValue getPuzzleValue(int i, int j) {
@@ -142,8 +168,8 @@ public class Sudoku {
         var value = puzzle.get(i).get(j);
         rowUsed.get(i).remove(value);
         columnUsed.get(j).remove(value);
-        getNonet(i, j).remove(value);
-        puzzle.get(i).set(j, 0);
+        getNonetSet(i, j).remove(value);
+        setPuzzleAt(i, j, 0);
     }
 
     public boolean loadData(String text) {
@@ -163,7 +189,7 @@ public class Sudoku {
         for (int pos = row * PuzzleDimension + col; pos < PuzzleDimension * PuzzleDimension; pos++) {
             var posRow = pos / PuzzleDimension;
             var posCol = pos % PuzzleDimension;
-            if (puzzle.get(posRow).get(posCol) == 0) {
+            if (getPuzzleAt(posRow, posCol) == 0) {
                 return new NextUnfilled(posRow, posCol, true);
             }
         }
@@ -173,9 +199,9 @@ public class Sudoku {
     private boolean isCandidatePosition(int row, int col, int value) {
         if (value > PuzzleDigits)
             return false;
-        if (puzzle.get(row).get(col)  != 0)
+        if (getPuzzleAt(row, col) != 0)
             return false;
-        return !(rowUsed.get(row).contains(value) || columnUsed.get(col).contains(value) || getNonet(row, col).contains(value));
+        return !(rowUsed.get(row).contains(value) || columnUsed.get(col).contains(value) || getNonetSet(row, col).contains(value));
     }
 
     public boolean solve() {
