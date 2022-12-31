@@ -6,10 +6,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SudokuTest {
 
+    private static final int KAGGLE_SAMPLE_SIZE = 100;
     @Test
     void tryKnownSolution() {
-        var puzzle = "300401620100080400005020830057800000000700503002904007480530010203090000070006090";
-        var solution = "398471625126385479745629831657813942914762583832954167489537216263198754571246398";
+        var puzzle = KaggleSudokuSampleData.puzzles[10];
+        var solution = KaggleSudokuSampleData.solutions[10];
         System.out.printf("  Puzzle: %s\n", puzzle);
         System.out.printf("Solution: %s\n", solution);
 
@@ -22,14 +23,33 @@ class SudokuTest {
         assertTrue(solved);
     }
 
+    @Test
+    void tryKaggleSubset() {
+        assertEquals(KaggleSudokuSampleData.puzzles.length, KaggleSudokuSampleData.solutions.length);
 
+        var skip = KaggleSudokuSampleData.puzzles.length / KAGGLE_SAMPLE_SIZE;
+        for (int i = 0; i < KaggleSudokuSampleData.puzzles.length; i += skip) {
+            var puzzle = KaggleSudokuSampleData.puzzles[i];
+            var solution = KaggleSudokuSampleData.solutions[i];
+            System.out.printf("  Puzzle: %s\n", puzzle);
+            System.out.printf("Solution: %s\n", solution);
+
+            var sudoku = new Sudoku();
+            sudoku.loadData(puzzle);
+            var solved = sudoku.solve();
+            var result = sudoku.getRepresentation();
+            System.out.printf("  Result: %s\n", result);
+            assertEquals(solution, result);
+            assertTrue(solved);
+        }
+    }
     @Test
     void getRepresentation() {
+        assert(KaggleSudokuSampleData.puzzles.length > 0);
         var sudoku = new Sudoku();
-        var puzzle = "004300209005009001070060043006002087190007400050083000600000105003508690042910300";
+        var puzzle = KaggleSudokuSampleData.puzzles[0];
         sudoku.loadData(puzzle);
         var representation = sudoku.getRepresentation();
         assertEquals(puzzle, representation);
     }
-
 }

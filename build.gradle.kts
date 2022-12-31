@@ -15,6 +15,8 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
     implementation("info.picocli:picocli:4.7.0")
+    implementation("org.tinylog:tinylog-api:2.5.0")
+    implementation("org.tinylog:tinylog-impl:2.5.0")
 }
 
 application {
