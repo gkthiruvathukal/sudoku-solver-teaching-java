@@ -2,6 +2,8 @@ package sh.gkt;
 
 /*
  * Note: Work in progress. Porting from my Go version!
+ * Core solver is complete.
+ * Interactive mode is not complete.
  */
 
 import java.util.HashSet;
@@ -58,26 +60,6 @@ public class Sudoku {
         }
         return a2dint;
     }
-
-//    public static void main(String[] args) {
-//        // TODO: Eliminate this hard-coded stuff.
-//        // Add general CLI interface from my Go version.
-//
-//        System.out.println("Sudoku loves you.");
-//
-//        var puzzle = "300401620100080400005020830057800000000700503002904007480530010203090000070006090";
-//        var solution = "";
-//        System.out.printf("Puzzle: %s\n", puzzle);
-//        System.out.printf("Solution: %s\n", solution);
-//
-//        var sudoku = new Sudoku();
-//        sudoku.loadData(puzzle);
-//        var unsolvedPuzzle = sudoku.getRepresentation();
-//        sudoku.show();
-//        var result = sudoku.solve();
-//        var solvedPuzzle = sudoku.getRepresentation();
-//        System.out.println(solvedPuzzle);
-//    }
 
     public Set<Integer> getNonetSet(int i, int j) {
         return nonet.get(i / NonetDimension).get(j / NonetDimension);
@@ -272,16 +254,11 @@ public class Sudoku {
     record SudokuSolverConfig(String puzzle, String solution) {
     }
 
-    record IsFullState(boolean full, int size) {
-    }
+    record IsFullState(boolean full, int size) {}
 
-    record PuzzleValue(boolean valid, int value) {
-    }
+    record PuzzleValue(boolean valid, int value) {}
 
-    record NextUnfilled(int row, int col, boolean available) {
-    }
+    record NextUnfilled(int row, int col, boolean available) {}
 
-    record SolutionStatus(boolean solved, int position) {
-    }
+    record SolutionStatus(boolean solved, int position) {}
 }
-
