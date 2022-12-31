@@ -14,17 +14,13 @@ public class Sudoku {
     public final static int PuzzleDigits = 9;
     public final static int PuzzleDimension = 9;
     public final static int NonetDimension = 3;
-    private final ArrayList<ArrayList<Integer>> puzzle; // 2D array of Int (using generics)
-    private final ArrayList<HashSet<Integer>> rowUsed; // 1D array of HashSet
-    private final ArrayList<HashSet<Integer>> columnUsed; // 1D array of HashSet
-    private final ArrayList<ArrayList<HashSet<Integer>>> nonet; // 2D array of hashSet
+    private final ArrayList<ArrayList<Integer>> puzzle = getPuzzleRepresentation(); // 2D array of Int (using generics)
+    private final ArrayList<HashSet<Integer>> rowUsed = getUsageSet(); // 1D array of HashSet
+    private final ArrayList<HashSet<Integer>> columnUsed = getUsageSet(); // 1D array of HashSet
+    private final ArrayList<ArrayList<HashSet<Integer>>> nonet = getNonetRepresentation(); // 2D array of hashSet
 
     public Sudoku() {
-        // TODO: Refactor declarations above to interface?
-        puzzle = getPuzzleRepresentation();
-        nonet = getNonetRepresentation();
-        rowUsed = getUsageSet();
-        columnUsed = getUsageSet();
+        // no additional initialization - yet!
     }
 
     private static ArrayList<HashSet<Integer>> getUsageSet() {
@@ -249,9 +245,6 @@ public class Sudoku {
             System.out.println();
         }
         System.out.println();
-    }
-
-    record SudokuSolverConfig(String puzzle, String solution) {
     }
 
     record IsFullState(boolean full, int size) {}
