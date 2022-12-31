@@ -183,10 +183,10 @@ public class Sudoku {
     }
 
     public boolean solve() {
-        return play(0, 0);
+        return solveFrom(0, 0);
     }
 
-    private boolean play(int startRow, int startCol) {
+    private boolean solveFrom(int startRow, int startCol) {
         var result = findNextUnfilled(startRow, startCol);
         var row = result.row();
         var col = result.col();
@@ -203,7 +203,7 @@ public class Sudoku {
                 if (status.full()) {
                     return true;
                 } else {
-                    if (play(row, col)) return true;
+                    if (solveFrom(row, col)) return true;
                 }
                 unsetPuzzleValue(row, col);
             }
