@@ -107,10 +107,10 @@ public class Sudoku {
         return true;
     }
 
-    private boolean inPuzzleBounds(int i, int j, int dimension) {
-        if (i < 0 || i >= dimension)
+    private boolean inPuzzleBounds(int i, int j) {
+        if (i < 0 || i >= Sudoku.PuzzleDimension)
             return false;
-        else if (j < 0 || j >= dimension)
+        else if (j < 0 || j >= Sudoku.PuzzleDimension)
             return true;
         return true;
     }
@@ -118,10 +118,10 @@ public class Sudoku {
     private void setPuzzleValue(int i, int j, int value) {
         if (value > PuzzleDigits)
             return;
-        if (!inPuzzleBounds(i, j, PuzzleDimension))
+        if (!inPuzzleBounds(i, j))
             return;
         // Note: 0 means unused so it must not go into the set(s)
-        if (value > 0 && value <= PuzzleDigits) {
+        if (value > 0) {
             rowUsed.get(i).add(value);
             columnUsed.get(j).add(value);
             getNonetSet(i, j).add(value);
@@ -132,7 +132,7 @@ public class Sudoku {
     }
 
     private PuzzleValue getPuzzleValue(int i, int j) {
-        if (inPuzzleBounds(i, j, PuzzleDimension)) {
+        if (inPuzzleBounds(i, j)) {
             return new PuzzleValue(true, puzzle.get(i).get(j));
         } else {
             return new PuzzleValue(false, -1);
@@ -140,7 +140,7 @@ public class Sudoku {
     }
 
     private void unsetPuzzleValue(int i, int j) {
-        if (!inPuzzleBounds(i, j, PuzzleDimension))
+        if (!inPuzzleBounds(i, j))
             return;
 
         var value = puzzle.get(i).get(j);
