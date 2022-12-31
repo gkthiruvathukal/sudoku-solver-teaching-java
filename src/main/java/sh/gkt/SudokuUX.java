@@ -32,8 +32,7 @@ class Solve implements Callable<Integer> {
     public static final String KNOWN_SOLUTION = "398471625126385479745629831657813942914762583832954167489537216263198754571246398";
 
     // known puzzle and solution are defaults
-    @Option(names = "-puzzle")
-    final String puzzle = KNOWN_PUZZLE;
+    @Option(names = "-puzzle") String puzzle = KNOWN_PUZZLE;
     @Option(names = "-solution") String solution;
 
     @Override public Integer call() {
