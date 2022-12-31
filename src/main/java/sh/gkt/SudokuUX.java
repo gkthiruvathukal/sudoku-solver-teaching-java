@@ -17,7 +17,7 @@ class SudokuUX implements Callable<Integer> {
     @Override public Integer call() {
         System.out.printf("Try a command, e.g. solve");
         boolean ok = true;
-        return ok ? 0 : 1; // exit code
+        return 0; // exit code
     }
 
     public static void main(String... args) {
@@ -32,7 +32,8 @@ class Solve implements Callable<Integer> {
     public static final String KNOWN_SOLUTION = "398471625126385479745629831657813942914762583832954167489537216263198754571246398";
 
     // known puzzle and solution are defaults
-    @Option(names = "-puzzle") String puzzle = KNOWN_PUZZLE;
+    @Option(names = "-puzzle")
+    final String puzzle = KNOWN_PUZZLE;
     @Option(names = "-solution") String solution;
 
     @Override public Integer call() {
@@ -52,6 +53,6 @@ class Solve implements Callable<Integer> {
             }
         }
         boolean ok = true;
-        return ok ? 0 : 1; // exit code
+        return 0; // exit code
     }
 }

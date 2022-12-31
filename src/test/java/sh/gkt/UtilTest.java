@@ -8,14 +8,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class UtilTest {
 
-    @BeforeEach
-    void setUp() {
-    }
-
-    @AfterEach
-    void tearDown() {
-    }
-
     @Test
     void getDigitsNormal() {
         var text1 = "8675309";
@@ -30,7 +22,7 @@ class UtilTest {
         var text2 = "";
         var digits2 = new int[]{};
         var result2 = Util.getDigits(text2);
-        assertEquals(text2.length(), result2.consumed());
+        assertEquals(0, result2.consumed());
         assertArrayEquals(result2.digits(), digits2);
     }
 
