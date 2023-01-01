@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.Set;
 
+import org.tinylog.Logger;
+
 public class Sudoku {
     public final static int PuzzleDigits = 9;
     public final static int PuzzleDimension = 9;
@@ -19,7 +21,9 @@ public class Sudoku {
     private final ArrayList<HashSet<Integer>> columnUsed = getUsageSet(); // 1D array of HashSet
     private final ArrayList<ArrayList<HashSet<Integer>>> nonet = getNonetRepresentation(); // 2D array of hashSet
 
+    private boolean progress = false;
     public Sudoku() {
+        Logger.info("Sukoku Initialized");
         // no additional initialization - yet!
     }
 
@@ -198,7 +202,7 @@ public class Sudoku {
         for (int digit = 1; digit <= PuzzleDigits; digit++) {
             if (isCandidatePosition(row, col, digit)) {
                 setPuzzleValue(row, col, digit);
-                show();
+                if (progress) show();
                 var status = isFullWithSize();
                 if (status.full()) {
                     return true;
@@ -224,27 +228,39 @@ public class Sudoku {
         return new SolutionStatus(true, puzzle.length());
     }
 
-    public void show() {
-        System.out.println("----".repeat(PuzzleDimension + 1) + "-");
+   @Override
+    public String toString() {
+        StringBuilder out = new StringBuilder();
+        out.append("----".repeat(PuzzleDimension + 1)).append("-");
+        out.append("\n");
         for (int i = 0; i < puzzle.size(); i++) {
             for (int j = 0; j < puzzle.get(i).size(); j++) {
-                System.out.printf(" %d  ", puzzle.get(i).get(j));
+                out.append(String.format(" %d  ", puzzle.get(i).get(j)));
             }
-            System.out.printf(" (%d)\n", rowUsed.get(i).size());
+            out.append(String.format(" (%d)\n", rowUsed.get(i).size()));
         }
-        System.out.println("----".repeat(PuzzleDimension + 1) + "-");
+        out.append("----".repeat(PuzzleDimension + 1)).append("-");
+        out.append("\n");
         for (int j = 0; j < puzzle.get(0).size(); j++) {
-            System.out.printf("(%d) ", columnUsed.get(j).size());
+            out.append(String.format("(%d) ", columnUsed.get(j).size()));
         }
-        System.out.println();
-        System.out.println("Nonets:");
+        out.append("\n").append("Nonets:").append("\n");
         for (var row : nonet) {
             for (var column : row) {
-                System.out.printf("(%d) ", column.size());
+                out.append(String.format("(%d) ", column.size()));
             }
-            System.out.println();
+            out.append("\n");
         }
-        System.out.println();
+        out.append("\n");
+        return out.toString();
+    }
+
+    public void show() {
+        System.out.println(this);
+    }
+
+    public void setProgress() {
+        progress = true;
     }
 
     record IsFullState(boolean full, int size) {}

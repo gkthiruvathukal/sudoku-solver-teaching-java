@@ -9,8 +9,10 @@ class SudokuTest {
     private static final int KAGGLE_SAMPLE_SIZE = 100;
     @Test
     void tryKnownSolution() {
-        var puzzle = KaggleSudokuSampleData.puzzles[10];
-        var solution = KaggleSudokuSampleData.solutions[10];
+        var solutionId = 10;
+        assert(KaggleSudokuSampleData.puzzles.length >= solutionId);
+        var puzzle = KaggleSudokuSampleData.puzzles[solutionId];
+        var solution = KaggleSudokuSampleData.solutions[solutionId];
         System.out.printf("  Puzzle: %s\n", puzzle);
         System.out.printf("Solution: %s\n", solution);
 

@@ -1,5 +1,8 @@
 package sh.gkt;
 
+import org.tinylog.Logger;
+
+
 // PicoCLI rocks!
 // This is based on the subcommand documentation.
 
@@ -35,14 +38,17 @@ class Solve implements Callable<Integer> {
     @Option(names = "-puzzle") String puzzle = KNOWN_PUZZLE;
     @Option(names = "-solution") String solution;
 
+    @Option(names = "-progress") Boolean progress = false;
+
     @Override public Integer call() {
         if (puzzle.equals(KNOWN_PUZZLE)) {
             solution = KNOWN_SOLUTION;
             System.out.println("Hard-wired puzzle and solution are being used as defaults.");
         }
         var sudoku = new Sudoku();
+        if (progress)
+            sudoku.setProgress();
         sudoku.loadData(puzzle);
-        sudoku.show();
         var solved = sudoku.solve();
         if (solved) {
             var solvedPuzzle = sudoku.getRepresentation();
