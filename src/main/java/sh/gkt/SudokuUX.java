@@ -43,7 +43,6 @@ class Solve implements Callable<Integer> {
     @Override public Integer call() {
         if (puzzle.equals(KNOWN_PUZZLE)) {
             solution = KNOWN_SOLUTION;
-            System.out.println("Hard-wired puzzle and solution are being used as defaults.");
         }
         var sudoku = new Sudoku();
         if (progress)
@@ -57,7 +56,6 @@ class Solve implements Callable<Integer> {
                 System.out.println("Solution matched!");
             }
         }
-        boolean ok = true;
         return 0; // exit code
     }
 }

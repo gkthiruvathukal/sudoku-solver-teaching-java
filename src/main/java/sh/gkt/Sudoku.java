@@ -6,11 +6,11 @@ package sh.gkt;
  * Interactive mode is not complete.
  */
 
-import java.util.HashSet;
-import java.util.ArrayList;
-import java.util.Set;
-
 import org.tinylog.Logger;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Sudoku {
     public final static int PuzzleDigits = 9;
@@ -22,6 +22,7 @@ public class Sudoku {
     private final ArrayList<ArrayList<HashSet<Integer>>> nonet = getNonetRepresentation(); // 2D array of hashSet
 
     private boolean progress = false;
+
     public Sudoku() {
         Logger.info("Sukoku Initialized");
         // no additional initialization - yet!
@@ -54,7 +55,7 @@ public class Sudoku {
         a2dint = new ArrayList<>(PuzzleDimension);
         for (int i = 0; i < PuzzleDimension; i++) {
             var row = new ArrayList<Integer>(PuzzleDimension);
-            for (int j=0; j < PuzzleDimension; j++)
+            for (int j = 0; j < PuzzleDimension; j++)
                 row.add(0);
             a2dint.add(row);
         }
@@ -228,7 +229,7 @@ public class Sudoku {
         return new SolutionStatus(true, puzzle.length());
     }
 
-   @Override
+    @Override
     public String toString() {
         StringBuilder out = new StringBuilder();
         out.append("----".repeat(PuzzleDimension + 1)).append("-");

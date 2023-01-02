@@ -17,6 +17,7 @@ dependencies {
     implementation("info.picocli:picocli:4.7.0")
     implementation("org.tinylog:tinylog-api:2.5.0")
     implementation("org.tinylog:tinylog-impl:2.5.0")
+    implementation("org.jline:jline:3.21.0")
 }
 
 application {
