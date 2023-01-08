@@ -1,3 +1,4 @@
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     java
@@ -37,10 +38,12 @@ application {
     mainClass.set("sh.gkt.SudokuUX")
 }
 
-tasks.test {
-    useJUnitPlatform()
-    maxHeapSize = "1G"
-    testLogging {
-        events("passed")
+tasks {
+    test {
+        useJUnitPlatform()
+        maxHeapSize = "1G"
+        testLogging {
+            events(TestLogEvent.FAILED, TestLogEvent.PASSED, TestLogEvent.SKIPPED)
+        }
     }
 }
